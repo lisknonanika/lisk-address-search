@@ -1,9 +1,9 @@
 # Start Lisk Address Search
 
-### `git clone https://github.com/lisknonanika/lisk-address-search.git`
-### `cd lisk-address-search`
-### `npm ci`
-### `npm start`
+- `git clone https://github.com/lisknonanika/lisk-address-search.git`
+- `cd lisk-address-search`
+- `npm ci`
+- `npm start`
 
 # Getting Started with Create React App
 
