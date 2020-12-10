@@ -1,0 +1,8 @@
+{
+    "name": "lisk-address-search",
+    "script": "./node_modules/react-scripts/scripts/start.js",
+
+    "env": {
+        "PORT": 3000
+    }
+}
