@@ -55,21 +55,31 @@ class App extends Component {
         passphrase: "",
       }
     });
-    if(!window.confirm("検索中は画面がフリーズするよ。\n開始してもいい？\n-Freezes during search.\n-OK?")) return;
 
-    if (this.state.word==="") {
+    const _word = this.state.word.toLowerCase().trim();
+    if (_word==="") {
       window.alert("\"Search Word\"は必須だよー\n-Required \"Search Word\"");
       return;
     }
+    if (/i|l|0|1/.test(_word)) {
+      window.alert("i(アイ), l(エル), 0(ゼロ), 1(イチ) は含めちゃだめですー\n-nmust not be includ \"i\", \"l\", \"0\", \"1\".");
+      return;
+    }
+    if (!/^[A-Za-z0-9]*$/.test(_word)) {
+      window.alert("半角英数字以外はだめですー\n-should be half-width alphanumeric.");
+      return;
+    }
+    if(!window.confirm("検索中は画面がフリーズするよ。\n開始してもいい？\n-Freezes during search.\n-OK?")) return;
+
+    const _st = new Date();
     while(true) {
       _cnt += 1;
       const passphrase = Mnemonic.generateMnemonic();
       const { address, publicKey } = cryptography.getAddressAndPublicKeyFromPassphrase(passphrase);
       const addressBip32 = cryptography.getBase32AddressFromAddress(address);
-      console.log(`${_cnt}: ${addressBip32}`);
-      if ((this.state.type==="0" && addressBip32.startsWith(`lsk${this.state.word.toLowerCase()}`)) ||
-          (this.state.type==="1" && addressBip32.endsWith(this.state.word.toLowerCase())) ||
-          (this.state.type==="2" && addressBip32.indexOf(this.state.word.toLowerCase()) >= 0)) {
+      if ((this.state.type==="0" && addressBip32.startsWith(`lsk${_word}`)) ||
+          (this.state.type==="1" && addressBip32.endsWith(_word)) ||
+          (this.state.type==="2" && addressBip32.indexOf(_word) >= 3)) {
         
         this.setState({
           account: {
@@ -81,6 +91,9 @@ class App extends Component {
         });
         window.alert("見つかったよ！\n-Found!");
         break;
+      }
+      if (_cnt%1000===0) {
+        console.log(`Search: ${_cnt} (${(new Date()-_st)/1000}sec.)`)
       }
       if (+this.state.count>0 && _cnt%+this.state.count===0) {
         if(!window.confirm(`${_cnt}回検索したけど見つかりません...\nまだ続ける？\n-Not Found..(Number of searches: ${_cnt})\n-Continue?`)) break;
@@ -107,6 +120,7 @@ class App extends Component {
         <div>
           <input type="text" value={this.state.word} onChange={this.onChange} placeholder="e.g. favoriteword"/>
         </div>
+        <div className="note">*must not be includ "i", "l", "0", "1".</div>
         
         <div style={{"marginTop": "10px"}}>- Search Type -</div>
         <div>
